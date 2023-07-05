@@ -10,15 +10,14 @@ const sockets = new Server(server);
 app.use(express.static("public"));
 
 const game = createGame();
+game.start();
 
 game.subscribe((command) => {
-  console.log(`> Emitting ${command.type}`);
   sockets.emit(command.type, command);
 });
 
 sockets.on("connection", (socket) => {
   const playerId = socket.id;
-  console.log(`> Player connected on Server with id: ${playerId}`);
 
   game.addPlayer({ playerId });
 
@@ -26,7 +25,6 @@ sockets.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     game.removePlayer({ playerId });
-    console.log("Player ID disconnected:>> ", playerId);
   });
 
   socket.on("move-player", (command) => {
